@@ -55,11 +55,13 @@ export default function Home() {
             placeholder="Paste the channel URL here"
             className="flex-1 rounded-lg border border-gray-300 bg-white px-5 py-4 text-lg text-gray-900 shadow-lg"
           />
-          <Button
-            title="Analyze Channel"
-            onPress={handleSearch}
-            className="rounded-lg bg-red-600 py-4 text-lg font-semibold text-white"
-          />
+          <Link asChild href="/channel">
+            <Button
+              title="Analyze Channel"
+              onPress={handleSearch}
+              className="rounded-lg bg-red-600 py-4 text-lg font-semibold text-white"
+            />
+          </Link>
         </View>
       </View>
 
