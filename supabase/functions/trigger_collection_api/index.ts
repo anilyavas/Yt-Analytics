@@ -7,13 +7,26 @@ import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
 console.log('Hello from Functions!');
 
-Deno.serve(async (req) => {
-  const { name } = await req.json();
-  const data = {
-    message: `Hello ${name}!`,
-  };
+Deno.serve(async (req: any) => {
+  const { url } = await req.json();
 
-  return new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } });
+  console.log(url);
+
+  const response = await fetch(
+    `https://api.brightdata.com/datasets/v3/trigger?dataset_id=gd_lk538t2k2p1k3oos71&include_errors=true`,
+    {
+      headers: {
+        Authorization: `Bearer ${Deno.env.get('BRIGHT_DATA_API_KEY')}`,
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify([{ url }]),
+    }
+  );
+
+  console.log(response);
+
+  return new Response(JSON.stringify({}), { headers: { 'Content-Type': 'application/json' } });
 });
 
 /* To invoke locally:

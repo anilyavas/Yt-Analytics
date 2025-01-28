@@ -3,35 +3,37 @@ import { useState } from 'react';
 import { View, Text, TextInput, FlatList, Pressable } from 'react-native';
 
 import { Button } from '~/components/Button';
+import { supabase } from '~/lib/supabase';
+
+const popularChannels = [
+  {
+    name: 'Marques Brownlee',
+    url: 'https://www.youtube.com/@marquesbrownlee',
+  },
+  {
+    name: 'TED',
+    url: 'https://www.youtube.com/@ted',
+  },
+  {
+    name: 'Smosh',
+    url: 'https://www.youtube.com/@smosh',
+  },
+];
 
 export default function Home() {
-  const [searchInput, setSearchInput] = useState('');
+  const [url, setUrl] = useState('');
   const [searchHistory, setSearchHistory] = useState<string[]>([
     'https://www.youtube.com/@marquesbrownlee',
     'https://www.youtube.com/@ted',
     'https://www.youtube.com/@smosh',
   ]);
 
-  const popularChannels = [
-    {
-      name: 'Marques Brownlee',
-      url: 'https://www.youtube.com/@marquesbrownlee',
-    },
-    {
-      name: 'TED',
-      url: 'https://www.youtube.com/@ted',
-    },
-    {
-      name: 'Smosh',
-      url: 'https://www.youtube.com/@smosh',
-    },
-  ];
-
-  const handleSearch = () => {
-    if (searchInput.trim()) {
-      setSearchHistory((prev) => [searchInput.trim(), ...prev.slice(0, 4)]); // Add to history (max 5)
-      setSearchInput('');
-    }
+  const startAnalyzing = async () => {
+    const { error, data } = await supabase.functions.invoke('trigger_collection_api', {
+      body: { url },
+    });
+    console.log('error', error);
+    console.log('data', data);
   };
 
   return (
@@ -50,18 +52,16 @@ export default function Home() {
         </Text>
         <View className="flex-row items-center gap-3">
           <TextInput
-            value={searchInput}
-            onChangeText={setSearchInput}
+            value={url}
+            onChangeText={setUrl}
             placeholder="Paste the channel URL here"
             className="flex-1 rounded-lg border border-gray-300 bg-white px-5 py-4 text-lg text-gray-900 shadow-lg"
           />
-          <Link asChild href="/channel">
-            <Button
-              title="Analyze Channel"
-              onPress={handleSearch}
-              className="rounded-lg bg-red-600 py-4 text-lg font-semibold text-white"
-            />
-          </Link>
+          <Button
+            title="Analyze Channel"
+            onPress={startAnalyzing}
+            className="rounded-lg bg-red-600 py-4 text-lg font-semibold text-white"
+          />
         </View>
       </View>
 
