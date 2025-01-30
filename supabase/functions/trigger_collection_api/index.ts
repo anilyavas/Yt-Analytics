@@ -1,8 +1,7 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
+import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 console.log('Hello from Functions!');
-
-//https://api.brightdata.com/datasets/v3/trigger?dataset_id=gd_lk538t2k2p1k3oos71&endpoint=https://fetezusfowkehtdpfipi.supabase.co/functions/v1/collection_webhook&format=json&uncompressed_webhook=true&include_errors=true
 
 Deno.serve(async (req: any) => {
   const { url } = await req.json();
@@ -31,7 +30,17 @@ Deno.serve(async (req: any) => {
   }
 
   const data = await response.json();
-  console.log('response: ', response);
+  //store job data in database
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+    { global: { headers: { Authorization: req.headers.get('Authorization')! } } }
+  );
+
+  const result = await supabase.from('scrape_jobs').insert({
+    id: data.snapshot_id,
+    status: 'running',
+  });
 
   return new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } });
 });
