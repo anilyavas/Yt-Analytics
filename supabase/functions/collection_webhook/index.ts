@@ -11,7 +11,7 @@ Deno.serve(async (req) => {
     { global: { headers: { Authorization: req.headers.get('Authrorization')! } } }
   );
   // save videos to db
-  const { data: channels, error } = await supabase.from('yt_channels').insert(
+  const { error } = await supabase.from('yt_channels').insert(
     data.map((item: any) => ({
       id: item.id,
       url: item.url,
@@ -29,7 +29,10 @@ Deno.serve(async (req) => {
   );
 
   // update scrape_jobs status to "ready"
-  await supabase.from('scrape_jobs').update({ status: 'ready' }).eq('id', snapshot_id);
+  await supabase
+    .from('scrape_jobs')
+    .update({ status: 'ready', channel_id: data[0].id })
+    .eq('id', snapshot_id);
 
   console.log('Data: ', data);
   console.log('Snapshot Id: ', snapshot_id);
