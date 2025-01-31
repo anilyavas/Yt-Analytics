@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 
@@ -38,10 +38,16 @@ export default function JobPage() {
         },
         (payload) => {
           console.log('Change recieved!', payload);
+          const updatedJob = payload.new;
+          router.push(`/channel/${updatedJob.channel_id}`);
         }
       )
       .subscribe();
-  }, [scrapeJob]);
+
+    return () => {
+      channels.unsubscribe();
+    };
+  }, []);
 
   if (isLoading) {
     return <ActivityIndicator />;
