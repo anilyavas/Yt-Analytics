@@ -21,12 +21,7 @@ Deno.serve(async (req: any) => {
   );
 
   if (!response.ok) {
-    console.log('response: ', response);
-    return new Response(JSON.stringify({ error: 'Failed to trigger collection' }), {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    throw new Error('Failed to trigger collection');
   }
 
   const data = await response.json();

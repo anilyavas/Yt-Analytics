@@ -1,6 +1,6 @@
 import { Link, router, Stack } from 'expo-router';
 import { useState } from 'react';
-import { View, Text, TextInput, FlatList, Pressable } from 'react-native';
+import { View, Text, TextInput, FlatList, Pressable, Alert } from 'react-native';
 
 import { Button } from '~/components/Button';
 import { supabase } from '~/lib/supabase';
@@ -29,12 +29,17 @@ export default function Home() {
   ]);
 
   const startAnalyzing = async () => {
+    if (!url) {
+      return;
+    }
     const { error, data } = await supabase.functions.invoke('trigger_collection_api', {
       body: { url },
     });
-    console.log('Data: ', data);
-    console.log('Error: ', error);
     router.push(`/job/${data.id}`);
+
+    if (error) {
+      Alert.alert('Error: ', error.message);
+    }
   };
 
   return (
