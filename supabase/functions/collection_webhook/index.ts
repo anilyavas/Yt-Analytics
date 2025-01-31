@@ -14,17 +14,18 @@ Deno.serve(async (req) => {
   const { error } = await supabase.from('yt_channels').insert(
     data.map((item: any) => ({
       id: item.id,
-      url: item.url,
+      updated_at: new Date().toISOString(),
+      url: item.url.replace('/about', ''),
       handle: item.handle,
       banner_img: item.banner_img,
-      profile_img: item.profile_img,
+      profile_image: item.profile_image,
       name: item.name,
       subscribers: item.subscribers,
       videos_count: item.videos_count,
       created_date: item.created_date,
       views: item.views,
       Description: item.Description,
-      location: item.location,
+      location: item.Details?.location,
     }))
   );
 
