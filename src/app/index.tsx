@@ -1,4 +1,4 @@
-import { Link, Stack } from 'expo-router';
+import { Link, router, Stack } from 'expo-router';
 import { useState } from 'react';
 import { View, Text, TextInput, FlatList, Pressable } from 'react-native';
 
@@ -32,8 +32,9 @@ export default function Home() {
     const { error, data } = await supabase.functions.invoke('trigger_collection_api', {
       body: { url },
     });
-    console.log('error', error);
-    console.log('data', data);
+    console.log('Data: ', data);
+    console.log('Error: ', error);
+    router.push(`/job/${data.id}`);
   };
 
   return (

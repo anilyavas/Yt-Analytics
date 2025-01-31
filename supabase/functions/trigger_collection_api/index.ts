@@ -37,10 +37,16 @@ Deno.serve(async (req: any) => {
     { global: { headers: { Authorization: req.headers.get('Authorization')! } } }
   );
 
-  const result = await supabase.from('scrape_jobs').insert({
-    id: data.snapshot_id,
-    status: 'running',
-  });
+  const { data: scrapeJob } = await supabase
+    .from('scrape_jobs')
+    .insert({
+      id: data.snapshot_id,
+      status: 'running',
+    })
+    .select()
+    .single();
 
-  return new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } });
+  return new Response(JSON.stringify(scrapeJob), {
+    headers: { 'Content-Type': 'application/json' },
+  });
 });
